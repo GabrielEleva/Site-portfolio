@@ -15,7 +15,7 @@ from models.portfolio import (
 )
 
 router = APIRouter()
-ADMIN_PIN = os.environ.get("ADMIN_PIN", "1234")
+ADMIN_PIN = os.environ.get("ADMIN_PIN", "2001")
 
 
 def _check_pin(pin: str) -> None:

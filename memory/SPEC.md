@@ -10,7 +10,7 @@ Dark cinematic portfolio site for Eleva Filmmaking, focused on presenting video 
 - Brand logo uses the provided PDF as a reference, with a responsive fallback mark; uploaded PNG/SVG/WebP logos replace it from the admin panel.
 
 ## Admin flow
-- `/admin` is protected by a simple demo PIN. The current demo PIN is stored in `memory/test_credentials.md`.
+- `/admin` is protected by a simple PIN. The current PIN is stored in `memory/test_credentials.md`.
 - Admin can add, edit, and remove video records and upload a logo image as a persisted data URL.
 - Video records currently accept MP4/thumbnail URLs so the supplied real files can be added without changing the UI.
 - Mutations require the PIN server-side and use MongoDB through the shared motor handle.
