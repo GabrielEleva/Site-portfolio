@@ -1,0 +1,3 @@
+# Eleva Filmmaking — Living Spec
+
+This file mirrors `memory/SPEC.md` for tools that use the lowercase template path. The product is a dark cinematic video portfolio at `/` with responsive hero/about/portfolio/contact sections, filterable video cards, an integrated modal player, WhatsApp CTAs, and a PIN-protected `/admin` dashboard for video metadata and logo management. The backend is FastAPI + MongoDB under `/api`; the frontend is React/TypeScript with TanStack Query. Four demo videos are seeded, and real videos can be added through MP4 URLs in the admin panel.

@@ -1,0 +1,145 @@
+{
+  "project_name": "Eleva Filmmaking Portfolio & Admin Portal",
+  "theme": "Dark Cinematic (60% Black, 30% Red, 10% White)",
+  "color_palette": {
+    "dominant_black_60": {
+      "bg_main": "#0B0B0C",
+      "bg_card": "#121215",
+      "bg_elevated": "#1A1A1E",
+      "bg_glass": "rgba(18, 18, 21, 0.85)",
+      "border_dark": "rgba(255, 255, 255, 0.08)",
+      "border_dark_active": "rgba(229, 9, 20, 0.4)"
+    },
+    "accent_red_30": {
+      "primary_red": "#E50914",
+      "brand_red_bright": "#FF1E27",
+      "brand_red_dark": "#99060C",
+      "glow_red": "rgba(229, 9, 20, 0.35)",
+      "whatsapp_green": "#25D366"
+    },
+    "contrast_white_10": {
+      "text_primary": "#FFFFFF",
+      "text_secondary": "#A1A1AA",
+      "text_muted": "#71717A",
+      "pure_white": "#FFFFFF"
+    }
+  },
+  "typography": {
+    "font_headline": "Outfit, Clash Display, Syne, sans-serif",
+    "font_body": "Plus Jakarta Sans, Inter, sans-serif",
+    "font_mono": "JetBrains Mono, monospace",
+    "scale": {
+      "h1_hero": "text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight uppercase leading-none",
+      "h2_section": "text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight uppercase",
+      "h3_card": "text-xl sm:text-2xl font-semibold tracking-normal",
+      "body": "text-base sm:text-lg text-zinc-300 leading-relaxed",
+      "caption": "text-xs sm:text-sm text-zinc-400 uppercase tracking-widest"
+    }
+  },
+  "branding_and_logo": {
+    "company_name": "Eleva Filmmaking",
+    "pdf_logo_asset_url": "https://customer-assets-m6fa6gv7.emergentagent.net/job_eleva-portfolio/artifacts/zupo7kme_Sem%20ti%CC%81tulo-1.pdf",
+    "logo_implementation": {
+      "header_space": "Allows dynamic logo upload (PNG/SVG/WebP transparent background). Renders custom uploaded logo image if available, else falls back to stylized SVG camera/aperture icon with 'ELEVA FILMMAKING' text logo.",
+      "footer_space": "Smaller variant of logo image or monochrome text + icon badge.",
+      "admin_control": "Admin panel has an option to change/upload Header & Footer logo images or reset to default."
+    }
+  },
+  "whatsapp_integration": {
+    "phone_number": "5512992431406",
+    "prefilled_text": "Olá! Gostaria de solicitar um orçamento para a Eleva Filmmaking.",
+    "direct_url": "https://wa.me/5512992431406?text=Olá!%20Gostaria%20de%20solicitar%20um%20orçamento%20para%20a%20Eleva%20Filmmaking.",
+    "floating_button": "Fixed bottom-right corner with pulse glow, WhatsApp icon, tooltip 'Solicitar Orçamento', data-testid='whatsapp-floating-button'",
+    "header_button": "Distinct red/green accent pill CTA in Header navigation, data-testid='whatsapp-header-button'"
+  },
+  "key_sections_and_layouts": {
+    "header": "Sticky glassmorphism nav (bg-[#0B0B0C]/80 backdrop-blur-md) with Logo slot, Nav Links (Início, Sobre, Portfólio, Contato), WhatsApp CTA, and 'Área Restrita' (Admin PIN trigger).",
+    "hero": "Cinematic full-width visual hero with background video loop or dark camera atmosphere image overlay, massive text 'TRANSFORMAMOS HISTÓRIAS EM IMAGENS', red accent lighting effects, play showreel modal button, and WhatsApp quote request CTA.",
+    "about": "Asymmetric bento grid featuring studio metrics (e.g. +150 produções, +10M views, equipamento 4K/6K cinema), team/director philosophy ('Narrativa visual de alto impacto'), and cinematic BTS imagery.",
+    "portfolio": "Filterable video gallery grid (Categorias: Todos, Comerciais, Videoclipes, Documentários, Eventos, Institucional). Cards feature custom hover thumbnail video previews or image hover lift, play overlay, video duration, title, category tag, and client name. Clicking opens high-res integrated HTML5/Modal Video Player with description & WhatsApp quote CTA for similar video.",
+    "contact": "Impactful contact section with direct WhatsApp action button, Email, Instagram link, location (São Paulo / Vale do Paraíba / Brasil), and dynamic quote request form.",
+    "admin_dashboard": "Modal or route protected by PIN ('1234' or custom PIN). Allows adding/editing/deleting videos (Title, Category, Description, Thumbnail URL or File Upload, Video URL or HTML5 File Upload, Aspect Ratio, Featured toggle) and Logo management."
+  },
+  "image_urls": {
+    "hero_bg": "https://images.unsplash.com/photo-1612544409025-e1f6a56c1152?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwxfHxjaW5lbWF0aWMlMjB2aWRlbyUyMHNob290JTIwc2V0fGVufDB8fHx8MTc4OTA3NzU0Nnww&ixlib=rb-4.1.0&q=85",
+    "about_studio": "https://images.unsplash.com/photo-1632187989763-c9c620420b4d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHw0fHxjaW5lbWF0aWMlMjB2aWRlbyUyMHNob290JTIwc2V0fGVufDB8fHx8MTc4OTA3NzU0Nnww&ixlib=rb-4.1.0&q=85",
+    "camera_lens": "https://images.unsplash.com/photo-1608186286925-8c0e1c1fbeac?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTZ8MHwxfHNlYXJjaHw0fHxtb3ZpZSUyMGNhbWVyYSUyMGxlbnMlMjBkYXJrfGVufDB8fHx8MTc4OTA3NzU0Nnww&ixlib=rb-4.1.0&q=85",
+    "filmmaker_action": "https://images.unsplash.com/photo-1611784728558-6c7d9b409cdf?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHw0fHxmaWxtbWFraW5nJTIwY2FtZXJhJTIwcHJvZHVjdGlvbnxlbnwwfHx8fDE3ODkwNzc1NDZ8MA&ixlib=rb-4.1.0&q=85",
+    "camera_rig": "https://images.unsplash.com/photo-1612548403247-aa2873e9422d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzV8MHwxfHNlYXJjaHszfHxmaWxtbWFraW5nJTIwY2FtZXJhJTIwcHJvZHVjdGlvbnxlbnwwfHx8fDE3ODkwNzc1NDZ8MA&ixlib=rb-4.1.0&q=85"
+  },
+  "video_seed_data": [
+    {
+      "id": "v1",
+      "title": "Redline Hypercar - Lançamento Oficial",
+      "category": "Comerciais",
+      "client": "Redline Motors",
+      "duration": "01:45",
+      "thumbnail": "https://images.unsplash.com/photo-1612544409025-e1f6a56c1152?crop=entropy&cs=srgb&fm=jpg&w=1200&q=85",
+      "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+      "featured": true,
+      "description": "Comercial cinematográfico de alta velocidade gravado em pista fechada com câmeras RED 8K e drones FPV."
+    },
+    {
+      "id": "v2",
+      "title": "Aura Sound - Documentário de Bastidores",
+      "category": "Documentários",
+      "client": "Aura Music Festival",
+      "duration": "04:20",
+      "thumbnail": "https://images.unsplash.com/photo-1632187989763-c9c620420b4d?crop=entropy&cs=srgb&fm=jpg&w=1200&q=85",
+      "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+      "featured": true,
+      "description": "Uma imersão emocional nos bastidores do maior festival de música independente do estado."
+    },
+    {
+      "id": "v3",
+      "title": "Eclipse Fashion - Coleção Outono/Inverno",
+      "category": "Videoclipes",
+      "client": "Eclipse Label",
+      "duration": "02:10",
+      "thumbnail": "https://images.unsplash.com/photo-1608186286925-8c0e1c1fbeac?crop=entropy&cs=srgb&fm=jpg&w=1200&q=85",
+      "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+      "featured": false,
+      "description": "Fashion film com iluminação neo-noir, jogos de sombras e paleta de cores dramática."
+    },
+    {
+      "id": "v4",
+      "title": "Urban Essence - Campanha Institucional",
+      "category": "Institucional",
+      "client": "Urban Construct",
+      "duration": "02:50",
+      "thumbnail": "https://images.unsplash.com/photo-1611784728558-6c7d9b409cdf?crop=entropy&cs=srgb&fm=jpg&w=1200&q=85",
+      "video_url": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+      "featured": true,
+      "description": "Filme institucional revelando a transformação arquitetônica e o propósito por trás dos novos empreendimentos."
+    }
+  ],
+  "testing_attributes": {
+    "rule": "All buttons, links, inputs, cards, and modal triggers must have unambiguous data-testid attributes",
+    "examples": [
+      "data-testid='nav-logo'",
+      "data-testid='nav-link-inicio'",
+      "data-testid='nav-link-portfolio'",
+      "data-testid='nav-link-admin'",
+      "data-testid='whatsapp-floating-button'",
+      "data-testid='whatsapp-header-button'",
+      "data-testid='hero-cta-quote'",
+      "data-testid='portfolio-filter-todos'",
+      "data-testid='portfolio-video-card-v1'",
+      "data-testid='video-modal-play-button'",
+      "data-testid='admin-pin-input'",
+      "data-testid='admin-pin-submit'",
+      "data-testid='admin-add-video-button'",
+      "data-testid='admin-upload-logo-input'"
+    ]
+  },
+  "instructions_to_main_agent": [
+    "Build a premium, high-impact dark cinematic web app for Eleva Filmmaking.",
+    "Ensure the 60% Black, 30% Red, 10% White ratio is respected strictly across all sections.",
+    "Implement header logo uploader & replacement capability so the user can easily swap logos.",
+    "Provide PIN protection for the Admin Panel (default PIN '1234' with clear feedback).",
+    "Include seeded video items stored in local state/API so the portfolio is instantly populated and functional.",
+    "Allow local video file upload / URL input, thumbnail file upload / URL input, and video editing in the Admin area.",
+    "Integrate the custom HTML5 video modal player with smooth play/pause, volume control, fullscreen, and direct WhatsApp quote request button.",
+    "Add explicit data-testid attributes on all interactive elements as requested in testing_attributes."
+  ]
+}
