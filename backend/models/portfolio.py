@@ -42,3 +42,10 @@ class BrandSettings(BaseModel):
 class BrandSettingsUpdate(BaseModel):
     pin: str = Field(min_length=1, max_length=32)
     logo_url: Optional[str] = Field(default=None, max_length=5_000_000)
+
+
+class MediaUpload(BaseModel):
+    url: str
+    filename: str
+    size_bytes: int
+    content_type: str

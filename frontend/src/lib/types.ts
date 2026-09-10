@@ -34,3 +34,10 @@ export interface AuthResponse {
   authenticated: boolean;
   message: string;
 }
+
+export interface MediaUpload {
+  url: string;
+  filename: string;
+  size_bytes: number;
+  content_type: string;
+}

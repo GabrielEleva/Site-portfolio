@@ -1,8 +1,10 @@
 import os
 import uuid
 from datetime import datetime, timezone
+from pathlib import Path
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
+from fastapi.responses import FileResponse
 
 from lib.db import db
 from models.portfolio import (
@@ -10,12 +12,16 @@ from models.portfolio import (
     AdminAuthResponse,
     BrandSettings,
     BrandSettingsUpdate,
+    MediaUpload,
     Video,
     VideoCreate,
 )
 
 router = APIRouter()
 ADMIN_PIN = os.environ.get("ADMIN_PIN", "2001")
+MEDIA_DIR = Path(__file__).resolve().parent.parent / "uploads"
+MAX_VIDEO_BYTES = 500 * 1024 * 1024
+UPLOAD_CHUNK_SIZE = 1024 * 1024
 
 
 def _check_pin(pin: str) -> None:
@@ -93,3 +99,46 @@ async def update_settings(payload: BrandSettingsUpdate) -> BrandSettings:
         upsert=True,
     )
     return settings
+
+
+@router.post("/admin/media/video", response_model=MediaUpload)
+async def upload_video(pin: str = Form(...), file: UploadFile = File(...)) -> MediaUpload:
+    _check_pin(pin)
+    original_name = file.filename or "video.mp4"
+    if not original_name.lower().endswith(".mp4"):
+        raise HTTPException(status_code=400, detail="Envie um arquivo MP4")
+
+    MEDIA_DIR.mkdir(parents=True, exist_ok=True)
+    stored_name = f"{uuid.uuid4()}.mp4"
+    destination = MEDIA_DIR / stored_name
+    total_bytes = 0
+    try:
+        with destination.open("wb") as output:
+            while chunk := await file.read(UPLOAD_CHUNK_SIZE):
+                total_bytes += len(chunk)
+                if total_bytes > MAX_VIDEO_BYTES:
+                    raise HTTPException(status_code=413, detail="O MP4 deve ter no máximo 500 MB")
+                output.write(chunk)
+    except HTTPException:
+        destination.unlink(missing_ok=True)
+        raise
+    except Exception:
+        destination.unlink(missing_ok=True)
+        raise HTTPException(status_code=500, detail="Não foi possível armazenar o vídeo")
+    finally:
+        await file.close()
+
+    return MediaUpload(
+        url=f"/api/media/{stored_name}",
+        filename=original_name,
+        size_bytes=total_bytes,
+        content_type="video/mp4",
+    )
+
+
+@router.get("/media/{filename}")
+async def serve_video(filename: str) -> FileResponse:
+    candidate = (MEDIA_DIR / filename).resolve()
+    if MEDIA_DIR.resolve() not in candidate.parents or not candidate.is_file():
+        raise HTTPException(status_code=404, detail="Arquivo não encontrado")
+    return FileResponse(candidate, media_type="video/mp4")

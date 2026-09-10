@@ -12,7 +12,8 @@ Dark cinematic portfolio site for Eleva Filmmaking, focused on presenting video 
 ## Admin flow
 - `/admin` is protected by a simple PIN. The current PIN is stored in `memory/test_credentials.md`.
 - Admin can add, edit, and remove video records and upload a logo image as a persisted data URL.
-- Video records currently accept MP4/thumbnail URLs so the supplied real files can be added without changing the UI.
+- Video records accept MP4/thumbnail URLs, or a local MP4 upload up to 500 MB with chunked storage and progress feedback.
+- Uploaded videos are stored under `backend/uploads/` with generated filenames and served through `/api/media/{filename}`.
 - Mutations require the PIN server-side and use MongoDB through the shared motor handle.
 
 ## Data model

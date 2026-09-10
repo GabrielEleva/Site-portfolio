@@ -44,3 +44,24 @@ export const apiPut = <T>(path: string, body?: JsonBody) => request<T>("PUT", pa
 export const apiPatch = <T>(path: string, body?: JsonBody) =>
   request<T>("PATCH", path, body ?? null);
 export const apiDelete = <T>(path: string) => request<T>("DELETE", path);
+
+export const apiUpload = <T>(
+  path: string,
+  formData: FormData,
+  onProgress?: (progress: number) => void,
+) => new Promise<T>((resolve, reject) => {
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST", `${BASE}${path}`);
+  xhr.withCredentials = true;
+  xhr.upload.addEventListener("progress", (event) => {
+    if (event.lengthComputable) onProgress?.(Math.round((event.loaded / event.total) * 100));
+  });
+  xhr.addEventListener("load", () => {
+    let body: unknown = null;
+    try { body = xhr.responseText ? JSON.parse(xhr.responseText) : null; } catch { body = null; }
+    if (xhr.status >= 200 && xhr.status < 300) resolve(body as T);
+    else reject(new ApiError(xhr.status, body));
+  });
+  xhr.addEventListener("error", () => reject(new ApiError(0, { detail: "Falha de rede durante o upload" })));
+  xhr.send(formData);
+});
