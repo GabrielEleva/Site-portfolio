@@ -1,6 +1,7 @@
 import os
 import uuid
 from datetime import datetime, timezone
+import mimetypes
 from pathlib import Path
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
@@ -21,6 +22,7 @@ router = APIRouter()
 ADMIN_PIN = os.environ.get("ADMIN_PIN", "2001")
 MEDIA_DIR = Path(__file__).resolve().parent.parent / "uploads"
 MAX_VIDEO_BYTES = 500 * 1024 * 1024
+MAX_THUMBNAIL_BYTES = 10 * 1024 * 1024
 UPLOAD_CHUNK_SIZE = 1024 * 1024
 
 
@@ -34,6 +36,49 @@ def _normalise_video(document: dict) -> Video:
     if isinstance(created_at, datetime) and created_at.tzinfo is None:
         created_at = created_at.replace(tzinfo=timezone.utc)
     return Video(**{**document, "created_at": created_at})
+
+
+async def _save_upload(
+    pin: str,
+    file: UploadFile,
+    allowed_suffixes: tuple[str, ...],
+    max_bytes: int,
+    invalid_detail: str,
+    oversized_detail: str,
+) -> MediaUpload:
+    _check_pin(pin)
+    original_name = file.filename or "upload"
+    suffix = Path(original_name).suffix.lower()
+    if suffix not in allowed_suffixes:
+        await file.close()
+        raise HTTPException(status_code=400, detail=invalid_detail)
+
+    MEDIA_DIR.mkdir(parents=True, exist_ok=True)
+    stored_name = f"{uuid.uuid4()}{suffix}"
+    destination = MEDIA_DIR / stored_name
+    total_bytes = 0
+    try:
+        with destination.open("wb") as output:
+            while chunk := await file.read(UPLOAD_CHUNK_SIZE):
+                total_bytes += len(chunk)
+                if total_bytes > max_bytes:
+                    raise HTTPException(status_code=413, detail=oversized_detail)
+                output.write(chunk)
+    except HTTPException:
+        destination.unlink(missing_ok=True)
+        raise
+    except Exception:
+        destination.unlink(missing_ok=True)
+        raise HTTPException(status_code=500, detail="Não foi possível armazenar o arquivo")
+    finally:
+        await file.close()
+
+    return MediaUpload(
+        url=f"/api/media/{stored_name}",
+        filename=original_name,
+        size_bytes=total_bytes,
+        content_type=mimetypes.guess_type(stored_name)[0] or "application/octet-stream",
+    )
 
 
 @router.get("/videos", response_model=list[Video])
@@ -103,42 +148,31 @@ async def update_settings(payload: BrandSettingsUpdate) -> BrandSettings:
 
 @router.post("/admin/media/video", response_model=MediaUpload)
 async def upload_video(pin: str = Form(...), file: UploadFile = File(...)) -> MediaUpload:
-    _check_pin(pin)
-    original_name = file.filename or "video.mp4"
-    if not original_name.lower().endswith(".mp4"):
-        raise HTTPException(status_code=400, detail="Envie um arquivo MP4")
+    return await _save_upload(
+        pin,
+        file,
+        (".mp4",),
+        MAX_VIDEO_BYTES,
+        "Envie um arquivo MP4",
+        "O MP4 deve ter no máximo 500 MB",
+    )
 
-    MEDIA_DIR.mkdir(parents=True, exist_ok=True)
-    stored_name = f"{uuid.uuid4()}.mp4"
-    destination = MEDIA_DIR / stored_name
-    total_bytes = 0
-    try:
-        with destination.open("wb") as output:
-            while chunk := await file.read(UPLOAD_CHUNK_SIZE):
-                total_bytes += len(chunk)
-                if total_bytes > MAX_VIDEO_BYTES:
-                    raise HTTPException(status_code=413, detail="O MP4 deve ter no máximo 500 MB")
-                output.write(chunk)
-    except HTTPException:
-        destination.unlink(missing_ok=True)
-        raise
-    except Exception:
-        destination.unlink(missing_ok=True)
-        raise HTTPException(status_code=500, detail="Não foi possível armazenar o vídeo")
-    finally:
-        await file.close()
 
-    return MediaUpload(
-        url=f"/api/media/{stored_name}",
-        filename=original_name,
-        size_bytes=total_bytes,
-        content_type="video/mp4",
+@router.post("/admin/media/thumbnail", response_model=MediaUpload)
+async def upload_thumbnail(pin: str = Form(...), file: UploadFile = File(...)) -> MediaUpload:
+    return await _save_upload(
+        pin,
+        file,
+        (".jpg", ".jpeg", ".png"),
+        MAX_THUMBNAIL_BYTES,
+        "Envie uma capa JPG ou PNG",
+        "A thumbnail deve ter no máximo 10 MB",
     )
 
 
 @router.get("/media/{filename}")
-async def serve_video(filename: str) -> FileResponse:
+async def serve_media(filename: str) -> FileResponse:
     candidate = (MEDIA_DIR / filename).resolve()
     if MEDIA_DIR.resolve() not in candidate.parents or not candidate.is_file():
         raise HTTPException(status_code=404, detail="Arquivo não encontrado")
-    return FileResponse(candidate, media_type="video/mp4")
+    return FileResponse(candidate, media_type=mimetypes.guess_type(str(candidate))[0] or "application/octet-stream")
