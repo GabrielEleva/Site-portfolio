@@ -41,3 +41,20 @@ export interface MediaUpload {
   size_bytes: number;
   content_type: string;
 }
+
+export interface Photo {
+  id: string;
+  title: string;
+  category: string;
+  image_url: string;
+  alt: string;
+  created_at: string;
+}
+
+export interface PhotoInput {
+  title: string;
+  category: string;
+  image_url: string;
+  alt: string;
+  pin: string;
+}

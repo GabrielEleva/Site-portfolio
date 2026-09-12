@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { ArrowDown, ArrowUpRight, Camera, ChevronRight, Clapperboard, LockKeyhole, Menu, MessageCircle, Play, X } from "lucide-react";
 
 import { apiGet } from "@/lib/api";
-import type { BrandSettings, Video } from "@/lib/types";
+import type { BrandSettings, Photo, Video } from "@/lib/types";
 import BrandLogo from "@/components/BrandLogo";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -15,6 +15,7 @@ const HERO_IMAGE = "https://images.unsplash.com/photo-1612544409025-e1f6a56c1152
 
 const fetchVideos = () => apiGet<Video[]>("/videos");
 const fetchSettings = () => apiGet<BrandSettings>("/settings");
+const fetchPhotos = () => apiGet<Photo[]>("/photos");
 
 function LogoSlot({ settingsLogo, compact = false }: { settingsLogo?: string | null; compact?: boolean }) {
   return <BrandLogo settingsLogo={settingsLogo} compact={compact} />;
@@ -82,15 +83,25 @@ function VideoCard({ video, onOpen }: { video: Video; onOpen: (video: Video) => 
   );
 }
 
+function PhotoCard({ photo, featured = false, onOpen }: { photo: Photo; featured?: boolean; onOpen: (photo: Photo) => void }) {
+  return <motion.button type="button" whileHover={{ y: -5 }} transition={{ duration: 0.25 }} onClick={() => onOpen(photo)} className={`group relative overflow-hidden border border-white/[.08] bg-[#121215] text-left focus-ring ${featured ? "md:col-span-2 md:row-span-2" : ""}`} data-testid={`gallery-photo-card-${photo.id}`}><div className={`${featured ? "aspect-[4/3]" : "aspect-[4/3]"} overflow-hidden`}><img src={photo.image_url} alt={photo.alt || photo.title} loading="lazy" className="size-full object-cover opacity-80 transition duration-700 group-hover:scale-105 group-hover:opacity-100" data-testid={`gallery-photo-image-${photo.id}`} /><div className="absolute inset-0 bg-gradient-to-t from-[#0b0b0c] via-transparent to-transparent" /><div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-4 sm:p-5"><div><Badge className="rounded-sm bg-[#e50914] text-[9px] uppercase tracking-[.18em]">{photo.category}</Badge><h3 className="mt-2 font-heading text-lg font-semibold text-white sm:text-xl">{photo.title}</h3></div><ArrowUpRight size={18} className="text-white/60 transition group-hover:text-[#ff1e27]" /></div></div></motion.button>;
+}
+
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [category, setCategory] = useState("Todos");
   const [activeVideo, setActiveVideo] = useState<Video | null>(null);
+  const [photoCategory, setPhotoCategory] = useState("Todos");
+  const [activePhoto, setActivePhoto] = useState<Photo | null>(null);
   const videosQuery = useQuery({ queryKey: ["videos"], queryFn: fetchVideos, retry: 1 });
   const settingsQuery = useQuery({ queryKey: ["settings"], queryFn: fetchSettings, retry: 1 });
+  const photosQuery = useQuery({ queryKey: ["photos"], queryFn: fetchPhotos, retry: 1 });
   const videos = videosQuery.data ?? [];
   const categories = useMemo(() => ["Todos", ...Array.from(new Set(videos.map((video) => video.category)))], [videos]);
   const visibleVideos = category === "Todos" ? videos : videos.filter((video) => video.category === category);
+  const photos = photosQuery.data ?? [];
+  const photoCategories = useMemo(() => ["Todos", ...Array.from(new Set(photos.map((photo) => photo.category)))], [photos]);
+  const visiblePhotos = photoCategory === "Todos" ? photos : photos.filter((photo) => photo.category === photoCategory);
 
   const closeMobile = () => setMobileMenuOpen(false);
   const scrollTo = (id: string) => {
@@ -107,6 +118,7 @@ export default function Home() {
             <button onClick={() => scrollTo("inicio")} className="focus-ring font-mono text-[10px] uppercase tracking-[.22em] text-zinc-400 transition hover:text-white" data-testid="nav-link-inicio">Início</button>
             <button onClick={() => scrollTo("sobre")} className="focus-ring font-mono text-[10px] uppercase tracking-[.22em] text-zinc-400 transition hover:text-white" data-testid="nav-link-sobre">Sobre</button>
             <button onClick={() => scrollTo("portfolio")} className="focus-ring font-mono text-[10px] uppercase tracking-[.22em] text-zinc-400 transition hover:text-white" data-testid="nav-link-portfolio">Portfólio</button>
+            <button onClick={() => scrollTo("galeria")} className="focus-ring font-mono text-[10px] uppercase tracking-[.22em] text-zinc-400 transition hover:text-white" data-testid="nav-link-galeria">Fotos</button>
             <button onClick={() => scrollTo("contato")} className="focus-ring font-mono text-[10px] uppercase tracking-[.22em] text-zinc-400 transition hover:text-white" data-testid="nav-link-contato">Contato</button>
             <Link to="/admin" className="focus-ring inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[.18em] text-zinc-500 transition hover:text-[#ff1e27]" data-testid="nav-link-admin"><LockKeyhole size={12} /> Área restrita</Link>
           </nav>
@@ -122,6 +134,7 @@ export default function Home() {
             <button onClick={() => scrollTo("inicio")} className="text-left font-mono text-xs uppercase tracking-[.2em] text-zinc-400" data-testid="mobile-nav-link-inicio">Início</button>
             <button onClick={() => scrollTo("sobre")} className="text-left font-mono text-xs uppercase tracking-[.2em] text-zinc-400" data-testid="mobile-nav-link-sobre">Sobre</button>
             <button onClick={() => scrollTo("portfolio")} className="text-left font-mono text-xs uppercase tracking-[.2em] text-zinc-400" data-testid="mobile-nav-link-portfolio">Portfólio</button>
+            <button onClick={() => scrollTo("galeria")} className="text-left font-mono text-xs uppercase tracking-[.2em] text-zinc-400" data-testid="mobile-nav-link-galeria">Fotos</button>
             <button onClick={() => scrollTo("contato")} className="text-left font-mono text-xs uppercase tracking-[.2em] text-zinc-400" data-testid="mobile-nav-link-contato">Contato</button>
             <Link to="/admin" onClick={closeMobile} className="font-mono text-xs uppercase tracking-[.2em] text-[#ff1e27]" data-testid="mobile-nav-link-admin">Área restrita</Link>
             <WhatsAppButton />
@@ -183,14 +196,22 @@ export default function Home() {
           </div>
         </section>
 
+        <section id="galeria" className="border-b border-white/[.06] bg-[#0b0b0c]" data-testid="gallery-section">
+          <div className="mx-auto max-w-7xl px-5 py-24 sm:px-8 sm:py-32 lg:px-12"><div className="flex flex-col justify-between gap-8 sm:flex-row sm:items-end"><div><SectionLabel number="03">Galeria fotográfica</SectionLabel><h2 className="font-heading text-4xl font-bold uppercase leading-none tracking-[-.04em] sm:text-6xl" data-testid="gallery-title">Além do<br /><span className="text-[#e50914]">movimento.</span></h2></div><p className="max-w-xs text-sm leading-relaxed text-zinc-500">Fotos aéreas, stills e fragmentos do set para contar a história por outros ângulos.</p></div><div className="mt-10 flex flex-wrap gap-2 border-b border-white/[.08] pb-4" data-testid="gallery-filters">{photoCategories.map((item) => <button key={item} onClick={() => setPhotoCategory(item)} className={`focus-ring border px-4 py-2 font-mono text-[10px] uppercase tracking-[.16em] transition ${photoCategory === item ? "border-[#e50914] bg-[#e50914] text-white" : "border-white/10 text-zinc-500 hover:border-white/30 hover:text-white"}`} data-testid={`gallery-filter-${item.toLowerCase().replaceAll(" ", "-")}`}>{item}</button>)}</div><div className="mt-8 grid gap-4 md:grid-cols-3" data-testid="gallery-grid">{visiblePhotos.map((photo, index) => <PhotoCard key={photo.id} photo={photo} featured={index === 0} onOpen={setActivePhoto} />)}{photosQuery.isPending && [1, 2, 3].map((item) => <div key={item} className="aspect-[4/3] animate-pulse bg-[#121215]" data-testid={`gallery-loading-${item}`} />)}{!photosQuery.isPending && visiblePhotos.length === 0 && <div className="col-span-full border border-dashed border-white/10 py-16 text-center text-sm text-zinc-500" data-testid="gallery-empty">Novas fotos chegando em breve.</div>}</div></div>
+        </section>
+
         <section id="contato" className="relative overflow-hidden" data-testid="contact-section">
           <div className="absolute right-[-12%] top-0 h-full w-1/2 bg-[radial-gradient(ellipse_at_center,rgba(229,9,20,.18),transparent_65%)]" />
-          <div className="relative mx-auto max-w-7xl px-5 py-24 sm:px-8 sm:py-32 lg:px-12"><SectionLabel number="03">Próximo projeto</SectionLabel><div className="grid gap-12 lg:grid-cols-[1.2fr_.8fr] lg:items-end"><div><h2 className="max-w-3xl font-heading text-5xl font-bold uppercase leading-[.9] tracking-[-.05em] sm:text-7xl" data-testid="contact-title">Vamos elevar<br /><span className="text-[#e50914]">a sua história?</span></h2><p className="mt-8 max-w-md text-base leading-relaxed text-zinc-400">Me conte o que você quer registrar ou colocar no mundo. A gente conversa pelo WhatsApp e transforma a ideia em filme.</p></div><div className="lg:justify-self-end"><a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="focus-ring group inline-flex items-center gap-5 border border-[#e50914] px-6 py-5 text-xs font-semibold uppercase tracking-[.18em] text-white transition duration-300 hover:bg-[#e50914]" data-testid="contact-whatsapp-button"><span className="grid size-9 place-items-center rounded-full bg-[#25D366] text-[#061b0d]"><MessageCircle size={18} /></span><span>Falar sobre um projeto</span><ArrowUpRight size={18} className="transition group-hover:translate-x-1 group-hover:-translate-y-1" /></a></div></div></div>
+          <div className="relative mx-auto max-w-7xl px-5 py-24 sm:px-8 sm:py-32 lg:px-12"><SectionLabel number="04">Próximo projeto</SectionLabel><div className="grid gap-12 lg:grid-cols-[1.2fr_.8fr] lg:items-end"><div><h2 className="max-w-3xl font-heading text-5xl font-bold uppercase leading-[.9] tracking-[-.05em] sm:text-7xl" data-testid="contact-title">Vamos elevar<br /><span className="text-[#e50914]">a sua história?</span></h2><p className="mt-8 max-w-md text-base leading-relaxed text-zinc-400">Me conte o que você quer registrar ou colocar no mundo. A gente conversa pelo WhatsApp e transforma a ideia em filme.</p></div><div className="lg:justify-self-end"><a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="focus-ring group inline-flex items-center gap-5 border border-[#e50914] px-6 py-5 text-xs font-semibold uppercase tracking-[.18em] text-white transition duration-300 hover:bg-[#e50914]" data-testid="contact-whatsapp-button"><span className="grid size-9 place-items-center rounded-full bg-[#25D366] text-[#061b0d]"><MessageCircle size={18} /></span><span>Falar sobre um projeto</span><ArrowUpRight size={18} className="transition group-hover:translate-x-1 group-hover:-translate-y-1" /></a></div></div></div>
         </section>
       </main>
 
       <footer className="border-t border-white/[.08]" data-testid="site-footer"><div className="mx-auto flex max-w-7xl flex-col gap-8 px-5 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12"><Link to="/" className="focus-ring" data-testid="footer-logo"><LogoSlot settingsLogo={settingsQuery.data?.logo_url} compact /></Link><p className="font-mono text-[9px] uppercase tracking-[.2em] text-zinc-600" data-testid="footer-copyright">© {new Date().getFullYear()} Eleva Filmmaking · São Paulo / Vale do Paraíba</p><div className="flex items-center gap-5"><Link to="/admin" className="focus-ring font-mono text-[9px] uppercase tracking-[.2em] text-zinc-500 transition hover:text-[#ff1e27]" data-testid="footer-admin-link">Área restrita</Link><a href="#inicio" className="focus-ring grid size-8 place-items-center border border-white/10 text-zinc-400 transition hover:border-[#e50914] hover:text-white" data-testid="footer-back-to-top" aria-label="Voltar ao topo"><ArrowDown size={14} className="rotate-180" /></a></div></div></footer>
       <WhatsAppButton floating />
+
+      <Dialog open={Boolean(activePhoto)} onOpenChange={(open) => !open && setActivePhoto(null)}>
+        <DialogContent className="max-w-5xl border-white/10 bg-[#0b0b0c] p-0 text-white" data-testid="photo-modal">{activePhoto && <><img src={activePhoto.image_url} alt={activePhoto.alt || activePhoto.title} className="max-h-[76vh] w-full object-contain" data-testid="photo-modal-image" /><div className="flex items-center justify-between gap-4 p-6"><div><Badge className="rounded-sm bg-[#e50914] text-[9px] uppercase tracking-[.2em]">{activePhoto.category}</Badge><DialogTitle className="mt-3 font-heading text-2xl uppercase text-white" data-testid="photo-modal-title">{activePhoto.title}</DialogTitle></div><DialogDescription className="sr-only">{activePhoto.alt || activePhoto.title}</DialogDescription></div></>}</DialogContent>
+      </Dialog>
 
       <Dialog open={Boolean(activeVideo)} onOpenChange={(open) => !open && setActiveVideo(null)}>
         <DialogContent className="max-w-5xl border-white/10 bg-[#0b0b0c] p-0 text-white" data-testid="video-modal">

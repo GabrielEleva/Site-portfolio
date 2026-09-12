@@ -49,3 +49,19 @@ class MediaUpload(BaseModel):
     filename: str
     size_bytes: int
     content_type: str
+
+
+class PhotoBase(BaseModel):
+    title: str = Field(min_length=2, max_length=120)
+    category: str = Field(min_length=2, max_length=40)
+    image_url: str = Field(min_length=1, max_length=2000)
+    alt: str = Field(default="", max_length=180)
+
+
+class PhotoCreate(PhotoBase):
+    pin: str = Field(min_length=1, max_length=32)
+
+
+class Photo(PhotoBase):
+    id: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

@@ -14,6 +14,8 @@ from models.portfolio import (
     BrandSettings,
     BrandSettingsUpdate,
     MediaUpload,
+    Photo,
+    PhotoCreate,
     Video,
     VideoCreate,
 )
@@ -95,6 +97,12 @@ async def get_settings() -> BrandSettings:
     return BrandSettings(**document)
 
 
+@router.get("/photos", response_model=list[Photo])
+async def list_photos() -> list[Photo]:
+    documents = await db.photos.find().sort("created_at", -1).to_list(1000)
+    return [Photo(**document) for document in documents]
+
+
 @router.post("/admin/auth", response_model=AdminAuthResponse)
 async def authenticate_admin(payload: AdminAuthRequest) -> AdminAuthResponse:
     authenticated = payload.pin == ADMIN_PIN
@@ -111,6 +119,15 @@ async def create_video(payload: VideoCreate) -> Video:
     video = Video(id=str(uuid.uuid4()), created_at=datetime.now(timezone.utc), **data)
     await db.videos.insert_one(video.model_dump())
     return video
+
+
+@router.post("/admin/photos", response_model=Photo)
+async def create_photo(payload: PhotoCreate) -> Photo:
+    _check_pin(payload.pin)
+    data = payload.model_dump(exclude={"pin"})
+    photo = Photo(id=str(uuid.uuid4()), created_at=datetime.now(timezone.utc), **data)
+    await db.photos.insert_one(photo.model_dump())
+    return photo
 
 
 @router.put("/admin/videos/{video_id}", response_model=Video)
@@ -132,6 +149,15 @@ async def delete_video(video_id: str, payload: AdminAuthRequest) -> AdminAuthRes
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Vídeo não encontrado")
     return AdminAuthResponse(authenticated=True, message="Vídeo removido")
+
+
+@router.post("/admin/photos/{photo_id}/delete", response_model=AdminAuthResponse)
+async def delete_photo(photo_id: str, payload: AdminAuthRequest) -> AdminAuthResponse:
+    _check_pin(payload.pin)
+    result = await db.photos.delete_one({"id": photo_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Foto não encontrada")
+    return AdminAuthResponse(authenticated=True, message="Foto removida")
 
 
 @router.put("/admin/settings", response_model=BrandSettings)
@@ -167,6 +193,18 @@ async def upload_thumbnail(pin: str = Form(...), file: UploadFile = File(...)) -
         MAX_THUMBNAIL_BYTES,
         "Envie uma capa JPG ou PNG",
         "A thumbnail deve ter no máximo 10 MB",
+    )
+
+
+@router.post("/admin/media/photo", response_model=MediaUpload)
+async def upload_photo(pin: str = Form(...), file: UploadFile = File(...)) -> MediaUpload:
+    return await _save_upload(
+        pin,
+        file,
+        (".jpg", ".jpeg", ".png"),
+        MAX_THUMBNAIL_BYTES,
+        "Envie uma foto JPG ou PNG",
+        "A foto deve ter no máximo 10 MB",
     )
 
 

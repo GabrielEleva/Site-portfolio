@@ -55,6 +55,37 @@ VIDEOS = [
     },
 ]
 
+PHOTOS = [
+    {
+        "id": "p1",
+        "title": "Estrada aberta",
+        "category": "Drone",
+        "image_url": "https://images.unsplash.com/photo-1660591900271-a7e5f7404f36?crop=entropy&cs=srgb&fm=jpg&w=1400&q=85",
+        "alt": "Estrada atravessando uma paisagem aérea em preto e branco",
+    },
+    {
+        "id": "p2",
+        "title": "Névoa da serra",
+        "category": "Drone",
+        "image_url": "https://images.unsplash.com/photo-1627650875150-843d6c9c4c76?crop=entropy&cs=srgb&fm=jpg&w=1200&q=85",
+        "alt": "Árvores e montanhas cobertas por névoa",
+    },
+    {
+        "id": "p3",
+        "title": "Por trás da câmera",
+        "category": "Stills",
+        "image_url": "https://images.unsplash.com/photo-1556912300-3017f3de2aa6?crop=entropy&cs=srgb&fm=jpg&w=1200&q=85",
+        "alt": "Equipe trabalhando em uma filmagem",
+    },
+    {
+        "id": "p4",
+        "title": "Olhar de set",
+        "category": "Stills",
+        "image_url": "https://images.unsplash.com/photo-1496559249665-c7e2874707ea?crop=entropy&cs=srgb&fm=jpg&w=1200&q=85",
+        "alt": "Filmmaker registrando uma cena",
+    },
+]
+
 
 async def seed() -> None:
     now = datetime.now(timezone.utc)
@@ -62,6 +93,12 @@ async def seed() -> None:
         await db.videos.update_one(
             {"id": video["id"]},
             {"$setOnInsert": {**video, "created_at": now}},
+            upsert=True,
+        )
+    for photo in PHOTOS:
+        await db.photos.update_one(
+            {"id": photo["id"]},
+            {"$setOnInsert": {**photo, "created_at": now}},
             upsert=True,
         )
     await db.site_settings.update_one(

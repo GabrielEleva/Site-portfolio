@@ -24,6 +24,10 @@ INDEXES: dict[str, list[IndexModel]] = {
         IndexModel([("featured", DESCENDING), ("created_at", DESCENDING)], name="featured_created"),
     ],
     "site_settings": [IndexModel([("key", ASCENDING)], name="key_unique", unique=True)],
+    "photos": [
+        IndexModel([("id", ASCENDING)], name="id_unique", unique=True),
+        IndexModel([("created_at", DESCENDING)], name="created_desc"),
+    ],
 }
 
 
