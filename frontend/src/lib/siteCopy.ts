@@ -1,0 +1,27 @@
+export const DEFAULT_SITE_COPY = {
+  hero_eyebrow: "Filmmaker · SP / Vale do Paraíba",
+  hero_title: "Transformamos\nhistórias\nem imagens.",
+  hero_footer: "Captação, direção e pós-produção para histórias que pedem presença.",
+  about_label: "Sobre o trabalho",
+  about_title: "Cada frame carrega\numa intenção.",
+  about_description: "Sou filmmaker e uso imagem, movimento e som para contar histórias com intenção. Este é um recorte do meu trabalho em eventos, campanhas comerciais e imagens aéreas.",
+  about_highlight: "Imagem com ritmo, textura e verdade",
+  service_events_title: "Cobertura de eventos",
+  service_events_description: "A energia, as pessoas e os momentos que não podem se repetir.",
+  service_commercials_title: "Vídeos comerciais",
+  service_commercials_description: "Filmes para apresentar marcas, produtos e ideias com personalidade.",
+  service_drone_title: "Imagens de drone",
+  service_drone_description: "Perspectivas aéreas para ampliar a escala e o impacto da sua história.",
+  portfolio_label: "Trabalhos selecionados",
+  portfolio_title: "Feito para\nser sentido.",
+  portfolio_description: "Eventos, campanhas e imagens aéreas que ganharam movimento, som e intenção.",
+  gallery_label: "Galeria fotográfica",
+  gallery_title: "Além do\nmovimento.",
+  gallery_description: "Fotos aéreas, stills e fragmentos do set para contar a história por outros ângulos.",
+  contact_label: "Próximo projeto",
+  contact_title: "Vamos elevar\na sua história?",
+  contact_description: "Me conte o que você quer registrar ou colocar no mundo. A gente conversa pelo WhatsApp e transforma a ideia em filme.",
+  contact_button_label: "Falar sobre um projeto",
+};
+
+export type SiteCopy = typeof DEFAULT_SITE_COPY;

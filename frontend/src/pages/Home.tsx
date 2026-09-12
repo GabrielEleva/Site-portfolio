@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { ArrowDown, ArrowUpRight, Camera, ChevronRight, Clapperboard, LockKeyhole, Menu, MessageCircle, Play, X } from "lucide-react";
 
 import { apiGet } from "@/lib/api";
+import { DEFAULT_SITE_COPY } from "@/lib/siteCopy";
 import type { BrandSettings, Photo, Video } from "@/lib/types";
 import BrandLogo from "@/components/BrandLogo";
 import { Badge } from "@/components/ui/badge";
@@ -87,6 +88,10 @@ function PhotoCard({ photo, featured = false, onOpen }: { photo: Photo; featured
   return <motion.button type="button" whileHover={{ y: -5 }} transition={{ duration: 0.25 }} onClick={() => onOpen(photo)} className={`group relative overflow-hidden border border-white/[.08] bg-[#121215] text-left focus-ring ${featured ? "md:col-span-2 md:row-span-2" : ""}`} data-testid={`gallery-photo-card-${photo.id}`}><div className={`${featured ? "aspect-[4/3]" : "aspect-[4/3]"} overflow-hidden`}><img src={photo.image_url} alt={photo.alt || photo.title} loading="lazy" className="size-full object-cover opacity-80 transition duration-700 group-hover:scale-105 group-hover:opacity-100" data-testid={`gallery-photo-image-${photo.id}`} /><div className="absolute inset-0 bg-gradient-to-t from-[#0b0b0c] via-transparent to-transparent" /><div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-4 sm:p-5"><div><Badge className="rounded-sm bg-[#e50914] text-[9px] uppercase tracking-[.18em]">{photo.category}</Badge><h3 className="mt-2 font-heading text-lg font-semibold text-white sm:text-xl">{photo.title}</h3></div><ArrowUpRight size={18} className="text-white/60 transition group-hover:text-[#ff1e27]" /></div></div></motion.button>;
 }
 
+function AccentLines({ text, accentLine = 1 }: { text: string; accentLine?: number }) {
+  return <>{text.split("\n").map((line, index) => <span key={`${line}-${index}`} className={`block ${index === accentLine ? "text-[#e50914]" : ""}`}>{line}</span>)}</>;
+}
+
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [category, setCategory] = useState("Todos");
@@ -102,6 +107,7 @@ export default function Home() {
   const photos = photosQuery.data ?? [];
   const photoCategories = useMemo(() => ["Todos", ...Array.from(new Set(photos.map((photo) => photo.category)))], [photos]);
   const visiblePhotos = photoCategory === "Todos" ? photos : photos.filter((photo) => photo.category === photoCategory);
+  const copy = { ...DEFAULT_SITE_COPY, ...(settingsQuery.data ?? {}) };
 
   const closeMobile = () => setMobileMenuOpen(false);
   const scrollTo = (id: string) => {
@@ -151,39 +157,39 @@ export default function Home() {
           <div className="absolute left-[52%] top-[28%] hidden h-72 w-px bg-gradient-to-b from-transparent via-[#e50914]/70 to-transparent lg:block eleva-scan" />
           <div className="relative mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-12">
             <motion.div initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .7 }} className="max-w-4xl">
-              <div className="mb-6 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[.32em] text-[#ff1e27]" data-testid="hero-eyebrow"><span className="h-px w-10 bg-[#e50914]" /> Filmmaker · SP / Vale do Paraíba</div>
-              <h1 className="font-heading text-5xl font-extrabold uppercase leading-[.9] tracking-[-.055em] text-white sm:text-7xl lg:text-[7.7rem]" data-testid="hero-title">Transformamos<br /><span className="text-[#e50914]">histórias</span><br />em imagens<span className="text-[#e50914]">.</span></h1>
+              <div className="mb-6 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[.32em] text-[#ff1e27]" data-testid="hero-eyebrow"><span className="h-px w-10 bg-[#e50914]" /> {copy.hero_eyebrow}</div>
+              <h1 className="font-heading text-5xl font-extrabold uppercase leading-[.9] tracking-[-.055em] text-white sm:text-7xl lg:text-[7.7rem]" data-testid="hero-title"><AccentLines text={copy.hero_title} /></h1>
               <div className="mt-10 flex flex-col gap-5 sm:flex-row sm:items-center">
                 <button onClick={() => scrollTo("portfolio")} className="focus-ring inline-flex w-fit items-center gap-3 bg-white px-6 py-4 text-xs font-semibold uppercase tracking-[.2em] text-[#0b0b0c] transition duration-300 hover:bg-[#ff1e27] hover:text-white" data-testid="hero-cta-portfolio">Explorar portfólio <ArrowDown size={16} /></button>
                 <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="focus-ring inline-flex w-fit items-center gap-3 text-xs font-semibold uppercase tracking-[.2em] text-white transition hover:text-[#ff1e27]" data-testid="hero-cta-quote">Pedir um orçamento <ArrowUpRight size={16} /></a>
               </div>
             </motion.div>
             <div className="mt-20 flex items-end justify-between border-t border-white/10 pt-5 sm:mt-28" data-testid="hero-footer-note">
-              <p className="max-w-[220px] text-xs leading-relaxed text-zinc-400">Captação, direção e pós-produção para histórias que pedem presença.</p>
+              <p className="max-w-[240px] text-xs leading-relaxed text-zinc-400" data-testid="hero-footer-copy">{copy.hero_footer}</p>
               <p className="hidden font-mono text-[10px] uppercase tracking-[.25em] text-zinc-500 sm:block">Scroll to explore <ChevronRight className="ml-2 inline rotate-90" size={13} /></p>
             </div>
           </div>
         </section>
 
         <section id="sobre" className="relative mx-auto max-w-7xl px-5 py-24 sm:px-8 sm:py-32 lg:px-12" data-testid="about-section">
-          <SectionLabel number="01" >Sobre o trabalho</SectionLabel>
+          <SectionLabel number="01">{copy.about_label}</SectionLabel>
           <div className="grid gap-12 lg:grid-cols-[1.1fr_.9fr] lg:gap-20">
             <div>
-              <h2 className="max-w-3xl font-heading text-4xl font-bold uppercase leading-[.95] tracking-[-.045em] sm:text-6xl" data-testid="about-title">Cada frame carrega<br /><span className="text-[#e50914]">uma intenção.</span></h2>
-              <p className="mt-8 max-w-xl text-base leading-relaxed text-zinc-400 sm:text-lg" data-testid="about-description">Sou filmmaker e uso imagem, movimento e som para contar histórias com intenção. Este é um recorte do meu trabalho em eventos, campanhas comerciais e imagens aéreas.</p>
-              <div className="mt-10 flex items-center gap-4"><span className="grid size-11 place-items-center rounded-full border border-[#e50914]/40 text-[#ff1e27]"><Clapperboard size={18} /></span><span className="font-mono text-[10px] uppercase tracking-[.22em] text-zinc-500">Imagem com ritmo, textura e verdade</span></div>
+              <h2 className="max-w-3xl font-heading text-4xl font-bold uppercase leading-[.95] tracking-[-.045em] sm:text-6xl" data-testid="about-title"><AccentLines text={copy.about_title} /></h2>
+              <p className="mt-8 max-w-xl text-base leading-relaxed text-zinc-400 sm:text-lg" data-testid="about-description">{copy.about_description}</p>
+              <div className="mt-10 flex items-center gap-4"><span className="grid size-11 place-items-center rounded-full border border-[#e50914]/40 text-[#ff1e27]"><Clapperboard size={18} /></span><span className="font-mono text-[10px] uppercase tracking-[.22em] text-zinc-500" data-testid="about-highlight">{copy.about_highlight}</span></div>
             </div>
             <div className="grid gap-px self-end border border-white/[.08] bg-white/[.08]" data-testid="about-services">
-              <div className="bg-[#121215] p-6 sm:p-8" data-testid="service-events"><span className="font-mono text-[10px] text-[#e50914]">01 /</span><h3 className="mt-4 font-heading text-2xl font-semibold uppercase text-white">Cobertura de eventos</h3><p className="mt-2 text-sm leading-relaxed text-zinc-500">A energia, as pessoas e os momentos que não podem se repetir.</p></div>
-              <div className="bg-[#121215] p-6 sm:p-8" data-testid="service-commercials"><span className="font-mono text-[10px] text-[#e50914]">02 /</span><h3 className="mt-4 font-heading text-2xl font-semibold uppercase text-white">Vídeos comerciais</h3><p className="mt-2 text-sm leading-relaxed text-zinc-500">Filmes para apresentar marcas, produtos e ideias com personalidade.</p></div>
-              <div className="bg-[#121215] p-6 sm:p-8" data-testid="service-drone"><span className="font-mono text-[10px] text-[#e50914]">03 /</span><h3 className="mt-4 font-heading text-2xl font-semibold uppercase text-white">Imagens de drone</h3><p className="mt-2 text-sm leading-relaxed text-zinc-500">Perspectivas aéreas para ampliar a escala e o impacto da sua história.</p></div>
+              <div className="bg-[#121215] p-6 sm:p-8" data-testid="service-events"><span className="font-mono text-[10px] text-[#e50914]">01 /</span><h3 className="mt-4 font-heading text-2xl font-semibold uppercase text-white">{copy.service_events_title}</h3><p className="mt-2 text-sm leading-relaxed text-zinc-500">{copy.service_events_description}</p></div>
+              <div className="bg-[#121215] p-6 sm:p-8" data-testid="service-commercials"><span className="font-mono text-[10px] text-[#e50914]">02 /</span><h3 className="mt-4 font-heading text-2xl font-semibold uppercase text-white">{copy.service_commercials_title}</h3><p className="mt-2 text-sm leading-relaxed text-zinc-500">{copy.service_commercials_description}</p></div>
+              <div className="bg-[#121215] p-6 sm:p-8" data-testid="service-drone"><span className="font-mono text-[10px] text-[#e50914]">03 /</span><h3 className="mt-4 font-heading text-2xl font-semibold uppercase text-white">{copy.service_drone_title}</h3><p className="mt-2 text-sm leading-relaxed text-zinc-500">{copy.service_drone_description}</p></div>
             </div>
           </div>
         </section>
 
         <section id="portfolio" className="border-y border-white/[.06] bg-[#0e0e10]" data-testid="portfolio-section">
           <div className="mx-auto max-w-7xl px-5 py-24 sm:px-8 sm:py-32 lg:px-12">
-            <div className="flex flex-col justify-between gap-8 sm:flex-row sm:items-end"><div><SectionLabel number="02">Trabalhos selecionados</SectionLabel><h2 className="font-heading text-4xl font-bold uppercase leading-none tracking-[-.04em] sm:text-6xl" data-testid="portfolio-title">Feito para<br /><span className="text-[#e50914]">ser sentido.</span></h2></div><p className="max-w-xs text-sm leading-relaxed text-zinc-500">Eventos, campanhas e imagens aéreas que ganharam movimento, som e intenção.</p></div>
+            <div className="flex flex-col justify-between gap-8 sm:flex-row sm:items-end"><div><SectionLabel number="02">{copy.portfolio_label}</SectionLabel><h2 className="font-heading text-4xl font-bold uppercase leading-none tracking-[-.04em] sm:text-6xl" data-testid="portfolio-title"><AccentLines text={copy.portfolio_title} /></h2></div><p className="max-w-xs text-sm leading-relaxed text-zinc-500" data-testid="portfolio-description">{copy.portfolio_description}</p></div>
             <div className="mt-12 flex flex-wrap gap-2 border-b border-white/[.08] pb-4" data-testid="portfolio-filters">
               {categories.map((item) => <button key={item} onClick={() => setCategory(item)} className={`focus-ring border px-4 py-2 font-mono text-[10px] uppercase tracking-[.16em] transition ${category === item ? "border-[#e50914] bg-[#e50914] text-white" : "border-white/10 text-zinc-500 hover:border-white/30 hover:text-white"}`} data-testid={`portfolio-filter-${item.toLowerCase().replaceAll(" ", "-")}`}>{item}</button>)}
             </div>
@@ -197,12 +203,12 @@ export default function Home() {
         </section>
 
         <section id="galeria" className="border-b border-white/[.06] bg-[#0b0b0c]" data-testid="gallery-section">
-          <div className="mx-auto max-w-7xl px-5 py-24 sm:px-8 sm:py-32 lg:px-12"><div className="flex flex-col justify-between gap-8 sm:flex-row sm:items-end"><div><SectionLabel number="03">Galeria fotográfica</SectionLabel><h2 className="font-heading text-4xl font-bold uppercase leading-none tracking-[-.04em] sm:text-6xl" data-testid="gallery-title">Além do<br /><span className="text-[#e50914]">movimento.</span></h2></div><p className="max-w-xs text-sm leading-relaxed text-zinc-500">Fotos aéreas, stills e fragmentos do set para contar a história por outros ângulos.</p></div><div className="mt-10 flex flex-wrap gap-2 border-b border-white/[.08] pb-4" data-testid="gallery-filters">{photoCategories.map((item) => <button key={item} onClick={() => setPhotoCategory(item)} className={`focus-ring border px-4 py-2 font-mono text-[10px] uppercase tracking-[.16em] transition ${photoCategory === item ? "border-[#e50914] bg-[#e50914] text-white" : "border-white/10 text-zinc-500 hover:border-white/30 hover:text-white"}`} data-testid={`gallery-filter-${item.toLowerCase().replaceAll(" ", "-")}`}>{item}</button>)}</div><div className="mt-8 grid gap-4 md:grid-cols-3" data-testid="gallery-grid">{visiblePhotos.map((photo, index) => <PhotoCard key={photo.id} photo={photo} featured={index === 0} onOpen={setActivePhoto} />)}{photosQuery.isPending && [1, 2, 3].map((item) => <div key={item} className="aspect-[4/3] animate-pulse bg-[#121215]" data-testid={`gallery-loading-${item}`} />)}{!photosQuery.isPending && visiblePhotos.length === 0 && <div className="col-span-full border border-dashed border-white/10 py-16 text-center text-sm text-zinc-500" data-testid="gallery-empty">Novas fotos chegando em breve.</div>}</div></div>
+          <div className="mx-auto max-w-7xl px-5 py-24 sm:px-8 sm:py-32 lg:px-12"><div className="flex flex-col justify-between gap-8 sm:flex-row sm:items-end"><div><SectionLabel number="03">{copy.gallery_label}</SectionLabel><h2 className="font-heading text-4xl font-bold uppercase leading-none tracking-[-.04em] sm:text-6xl" data-testid="gallery-title"><AccentLines text={copy.gallery_title} /></h2></div><p className="max-w-xs text-sm leading-relaxed text-zinc-500" data-testid="gallery-description">{copy.gallery_description}</p></div><div className="mt-10 flex flex-wrap gap-2 border-b border-white/[.08] pb-4" data-testid="gallery-filters">{photoCategories.map((item) => <button key={item} onClick={() => setPhotoCategory(item)} className={`focus-ring border px-4 py-2 font-mono text-[10px] uppercase tracking-[.16em] transition ${photoCategory === item ? "border-[#e50914] bg-[#e50914] text-white" : "border-white/10 text-zinc-500 hover:border-white/30 hover:text-white"}`} data-testid={`gallery-filter-${item.toLowerCase().replaceAll(" ", "-")}`}>{item}</button>)}</div><div className="mt-8 grid gap-4 md:grid-cols-3" data-testid="gallery-grid">{visiblePhotos.map((photo, index) => <PhotoCard key={photo.id} photo={photo} featured={index === 0} onOpen={setActivePhoto} />)}{photosQuery.isPending && [1, 2, 3].map((item) => <div key={item} className="aspect-[4/3] animate-pulse bg-[#121215]" data-testid={`gallery-loading-${item}`} />)}{!photosQuery.isPending && visiblePhotos.length === 0 && <div className="col-span-full border border-dashed border-white/10 py-16 text-center text-sm text-zinc-500" data-testid="gallery-empty">Novas fotos chegando em breve.</div>}</div></div>
         </section>
 
         <section id="contato" className="relative overflow-hidden" data-testid="contact-section">
           <div className="absolute right-[-12%] top-0 h-full w-1/2 bg-[radial-gradient(ellipse_at_center,rgba(229,9,20,.18),transparent_65%)]" />
-          <div className="relative mx-auto max-w-7xl px-5 py-24 sm:px-8 sm:py-32 lg:px-12"><SectionLabel number="04">Próximo projeto</SectionLabel><div className="grid gap-12 lg:grid-cols-[1.2fr_.8fr] lg:items-end"><div><h2 className="max-w-3xl font-heading text-5xl font-bold uppercase leading-[.9] tracking-[-.05em] sm:text-7xl" data-testid="contact-title">Vamos elevar<br /><span className="text-[#e50914]">a sua história?</span></h2><p className="mt-8 max-w-md text-base leading-relaxed text-zinc-400">Me conte o que você quer registrar ou colocar no mundo. A gente conversa pelo WhatsApp e transforma a ideia em filme.</p></div><div className="lg:justify-self-end"><a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="focus-ring group inline-flex items-center gap-5 border border-[#e50914] px-6 py-5 text-xs font-semibold uppercase tracking-[.18em] text-white transition duration-300 hover:bg-[#e50914]" data-testid="contact-whatsapp-button"><span className="grid size-9 place-items-center rounded-full bg-[#25D366] text-[#061b0d]"><MessageCircle size={18} /></span><span>Falar sobre um projeto</span><ArrowUpRight size={18} className="transition group-hover:translate-x-1 group-hover:-translate-y-1" /></a></div></div></div>
+          <div className="relative mx-auto max-w-7xl px-5 py-24 sm:px-8 sm:py-32 lg:px-12"><SectionLabel number="04">{copy.contact_label}</SectionLabel><div className="grid gap-12 lg:grid-cols-[1.2fr_.8fr] lg:items-end"><div><h2 className="max-w-3xl font-heading text-5xl font-bold uppercase leading-[.9] tracking-[-.05em] sm:text-7xl" data-testid="contact-title"><AccentLines text={copy.contact_title} /></h2><p className="mt-8 max-w-md text-base leading-relaxed text-zinc-400" data-testid="contact-description">{copy.contact_description}</p></div><div className="lg:justify-self-end"><a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="focus-ring group inline-flex items-center gap-5 border border-[#e50914] px-6 py-5 text-xs font-semibold uppercase tracking-[.18em] text-white transition duration-300 hover:bg-[#e50914]" data-testid="contact-whatsapp-button"><span className="grid size-9 place-items-center rounded-full bg-[#25D366] text-[#061b0d]"><MessageCircle size={18} /></span><span>{copy.contact_button_label}</span><ArrowUpRight size={18} className="transition group-hover:translate-x-1 group-hover:-translate-y-1" /></a></div></div></div>
         </section>
       </main>
 

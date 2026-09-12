@@ -163,7 +163,10 @@ async def delete_photo(photo_id: str, payload: AdminAuthRequest) -> AdminAuthRes
 @router.put("/admin/settings", response_model=BrandSettings)
 async def update_settings(payload: BrandSettingsUpdate) -> BrandSettings:
     _check_pin(payload.pin)
-    settings = BrandSettings(logo_url=payload.logo_url, updated_at=datetime.now(timezone.utc))
+    existing = await db.site_settings.find_one({"key": "brand"})
+    current = BrandSettings(**existing) if existing else BrandSettings()
+    updates = payload.model_dump(exclude={"pin"}, exclude_none=True)
+    settings = BrandSettings(**{**current.model_dump(), **updates, "updated_at": datetime.now(timezone.utc)})
     await db.site_settings.update_one(
         {"key": "brand"},
         {"$set": {**settings.model_dump(), "key": "brand"}},
